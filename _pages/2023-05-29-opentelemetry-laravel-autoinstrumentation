@@ -1,0 +1,6 @@
+---
+title: "OpenTelemetry Laravel Autoinstrumentation"
+date: 2023-05-29
+---
+
+Here we will cover autoinstrumentation for laravel by using `ext-opentelemetry` and few environment variables.
