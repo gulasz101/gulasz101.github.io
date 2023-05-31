@@ -4,6 +4,7 @@ date: 2023-05-29
 ---
 
 # Laravel tracing autoinstrumentation using ext-opentelemetry.
+
 Below we will cover opentelemetry auto instrumentation by using barebones laravel served from docker container with roadrunner.
 
 Roadrunner is going to start our root trace, and we will use laravel autoinstrumentation coming with `open-telemetry/opentelemetry-auto-laravel` package.
@@ -12,6 +13,7 @@ Traces will be send to [Opentelemetry collector](https://opentelemetry.io/docs/c
 
 ## Preparation
 ### App runtime
+
 We need to start from basic dockerfile for our application.
 ```Dockerfile
 ARG PHP_VERSION=8.2
@@ -51,6 +53,7 @@ RUN apk add --no-cache \
 
 USER php
 ```
+
 Next step is to build docker image based on it:
 ```bash
 mkdir lara-otel-project
@@ -74,7 +77,6 @@ docker run -it --rm -v $PWD:/app lara-otel composer create-project laravel/larav
 ```
  
 #### Now we need to do some basic setup of roadrunner:
-
 ```
 docker run -it --rm -v $PWD/service:/app lara-otel composer require spiral/roadrunner-laravel -W
 docker run -it --rm -v $PWD/service:/app lara-otel php ./artisan vendor:publish --provider='Spiral\RoadRunnerLaravel\ServiceProvider' --tag=config
@@ -108,6 +110,7 @@ Let's test run this file:
 ```
 docker run -it --rm -v $PWD/service:/app -v $PWD/.rr.yaml:/app/.rr.yaml -p 8080:8080 lara-otel rr serve -c ./.rr.yaml
 ```
+
 We should see something like:
 ```
 ❯ docker run -it --rm -v $PWD/service:/app -v $PWD/.rr.yaml:/app/.rr.yaml -p 8080:8080 lara-otel rr serve -c ./.rr.yaml
@@ -122,6 +125,7 @@ We should see something like:
 2023-05-29T19:43:24.387Z        DEBUG   server          worker is allocated     {"pid": 23, "internal_event_name": "EventWorkerConstruct"}
 2023-05-29T19:43:24.387Z        DEBUG   http            http server was started {"address": "0.0.0.0:8080"}
 ```
+
 And eventually we can test if app is alive:
 ```
 ~/Projects/otel-php-laravel
@@ -150,6 +154,7 @@ And eventually we can test if app is alive:
 ```
 
 #### docker-compose file
+
 We will go super basic: we will setup basic postgres so we will have some database connection info trace and app service based on already built image to run our application and that is all we need to perform health check and continue to actual tracing.
 ```yaml
 version: "3.6"
@@ -217,10 +222,10 @@ volumes:
 ```
 
 #### Finally we can install some healthcheck
+
 so our application by just checking its health will have enough to do to provide us meaningful traces.
 
 Assuming you application is up and running (`docker compose up -d`) please install following dependency:
-
 ```bash
 docker compose exec app composer require spatie/laravel-health
 
@@ -286,8 +291,10 @@ Now after running health check against local instance we should see output as fo
   FAILED     Redis › Failed
              ⇂ An exception occurred when connecting to Redis: `Connection refused`
   OK         Used Disk Space › 11%
-``` 
+```
+ 
 ## Opentelemetry collector
+
 Finally! After all this boilerplate preparation we can start setting up actual subject of this article.
 
 As mentioned before we need:
@@ -297,9 +304,11 @@ As mentioned before we need:
 * Something to display our traces -> grafana itself;
 
 ### Configuring collector
+
 Here we will perform basic configuration of our collector, which will display all the traces in logs feed (`docker compose logs collector -f`). We have to also instrument our laravel application to dispatch traces over `gRPC` to collector.
 
 #### Basic configuration file
+
 We will first start from `otel-collector-config.yml` file placed next to `docker-compose.yml`. For now we are instrumenting collector to output all traces as log.
 ```yaml
 receivers:
@@ -337,7 +346,7 @@ service:
 
 #### Instrumenting laravel app
 
-First we need to let our app to install `dev` stability dependencies:
+First we need to let our app to install dependencies with `dev` stability:
 ```json
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -366,7 +375,7 @@ services:
 			OTEL_PHP_FIBERS_ENABLED: false
 ```
 
-After performing multiple times request to our health check endpoint we:
+After performing multiple times (we are using batch processor, so only if we will have enough cached traces will be send) request to our health check endpoint we:
 ```bash
 curl -vvv localhost:8080/health?fresh -H "Accept: application/json"
 ```
