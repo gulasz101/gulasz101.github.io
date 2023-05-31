@@ -397,8 +397,99 @@ otel-php-laravel-collector-1  |      -> db.system: Str(pgsql)
 otel-php-laravel-collector-1  |      -> db.name: Str(laravel)
 otel-php-laravel-collector-1  |      -> db.operation: Str(INSERT)
 otel-php-laravel-collector-1  |      -> db.user: Str(postgres)
-otel-php-laravel-collector-1  |      -> db.statement: Str(insert into "health_check_result_history_items" ("check_name", "check_label", "status", "notification_message", "short_summary", "meta", "batch", "ended_at", "updated_at", "created_at") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning "id")
+otel-php-laravel-collector-1  |      -> db.statement: Str(insert into "health_check_result_history_items" ("check_name", "check_label", 
+ "ended_at", "updated_at", "created_at") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning "id")
 ```
 
 !! BOOM !! Our application is instrumented to dispatch opentelemetry traces over grpc to collector.
 
+## Human readable traces with tempo and grafana.
+
+So reading logs proving we have instrumented our application correct, but this is far from ideal solution.
+
+Let's visualize them!
+
+### Setup
+
+To do so, we need two more components, tempo as storage of traces for grafana, and grafana itself so we can display everything in easy to digest form, search over them, maybe made some dashboards.
+
+#### New services in docker-compose.yml
+
+```yaml
+services:
+  tempo:
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo-config.yaml:/etc/tempo.yaml
+      - ./tempodata:/tmp/tempo
+    ports:
+      - "3200"   # tempo
+      - "4317"  # otlp grpc
+      - "4318"  # otlp http
+  grafana:
+    image: grafana/grafana:9.3.2
+    volumes:
+      - ./grafana-datasources-config.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+    ports:
+      - "3000:3000"
+
+volumes:
+	tempodata:
+``` 
+
+#### tempo-config.yaml (next to docker-compose.yml file)
+
+```yaml
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:                           # this configuration will listen on all ports and protocols that tempo is capable of.
+    otlp:
+      protocols:
+        http:
+        grpc:
+    opencensus:
+
+ingester:
+  max_block_duration: 5m               # cut the headblock when this much time passes. this is being set for demo purposes and should probably be left alone normally
+
+compactor:
+  compaction:
+    block_retention: 1h                # overall Tempo trace retention. set for demo purposes
+
+storage:
+  trace:
+    backend: local                     # backend configuration to use
+    wal:
+      path: /tmp/tempo/wal             # where to store the the wal locally
+    local:
+      path: /tmp/tempo/blocks
+```
+
+#### garafana-datasources-config.yaml
+
+```yaml
+apiVersion: 1
+
+datasources:
+- name: Tempo
+  type: tempo
+  access: proxy
+  orgId: 1
+  url: http://tempo:3200
+  basicAuth: false
+  isDefault: true
+  version: 1
+  editable: true
+  apiVersion: 1
+  uid: tempo
+```
+
+#### Persisting traces in tempo.
