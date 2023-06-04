@@ -1,6 +1,8 @@
 ---
+layout: post
 title: "OpenTelemetry Tracing Laravel Autoinstrumentation"
 date: 2023-06-02
+tags: php laravel opentelemetry grafana tracing
 ---
 
 # Laravel tracing autoinstrumentation using ext-opentelemetry.
@@ -541,7 +543,7 @@ We can navigate to local [grafana](http://localhost:3000) and go directly to tab
 
 We should see result as following, with which we can play around.
 
-![grafana in action](./assets/images/2023-06-02-opentelemetry-laravel-autoinstrumentation.png)
+![grafana in action](/assets/images/2023-06-02-opentelemetry-laravel-autoinstrumentation.png)
 
 ## Instrumenting roadrunner to create parent traces.
 
