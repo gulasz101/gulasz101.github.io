@@ -19,7 +19,7 @@ I'm software engineer at [Metro Markets GmbH](https://www.metro-markets.de/). Fo
 ### Little bit about me:
 * still lover of PHP (10++ years);
 * big RUST enthusiast 🤩;
-* I love my two cats;
+* I love my two cats and wife;
 * amateur [photographer](https://insidepumpkin.com/);
 * bass 🎸 player [@ Josito And The Kids](https://www.instagram.com/jositoandthekids/);
 
