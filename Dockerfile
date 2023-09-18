@@ -31,26 +31,29 @@ RUN unset GEM_HOME && unset GEM_BIN && \
 
 RUN unset GEM_HOME && unset GEM_BIN && yes | gem install --force bundler
 RUN gem install jekyll -v "3.9.3" 
+
 RUN gem install \
-    html-proofer \
-    jekyll-reload \
-    jekyll-mentions \
-    jekyll-coffeescript \
-    jekyll-sass-converter \
-    jekyll-commonmark \
-    jekyll-paginate \
-    jekyll-compose \
-    jekyll-assets \
-    RedCloth \
-    kramdown \
-    jemoji \
-    jekyll-redirect-from \
-    jekyll-sitemap \
-    jekyll-feed \
-    minima \
-    jekyll-github-metadata \
-    github-pages \
-    kramdown-parser-gfm
+  html-proofer \
+  RedCloth \
+  kramdown \
+  jemoji \
+  minima \
+  github-pages \
+  kramdown-parser-gfm
+
+RUN gem install \
+  jekyll-reload \
+  jekyll-mentions \
+  jekyll-coffeescript \
+  # jekyll-sass-converter \
+  jekyll-commonmark \
+  jekyll-paginate \
+  jekyll-compose \
+  jekyll-assets \
+  jekyll-redirect-from \
+  jekyll-github-metadata \
+  jekyll-sitemap \
+  jekyll-feed
 
 RUN bundle init 
 RUN bundle add jekyll --version "3.9.3" \
