@@ -84,7 +84,7 @@ Developing simple tasks that were provided me by my "buddy".
 Providing simple changes to plugins for sugarCRM. 
 Assisting setup of new project as well as providing simple CRUD functionalities by given request from our new client.
 
-### Venitech Sp z o.o. | Lublin, Poland | 05-2010 - 09-2011
+### Venitech Sp z o.o. | Warsaw, Poland | 05-2010 - 09-2011
 ### IT Support Consultant
 
 ### Position description
