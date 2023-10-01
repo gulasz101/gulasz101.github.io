@@ -16,8 +16,8 @@ I'm software engineer at [Metro Markets GmbH](https://www.metro-markets.de/). Fo
 * I love my two cats and wife;
 * amateur [photographer](https://insidepumpkin.com/); (sorry for cert issue)
 * bass 🎸 player [@ Josito And The Kids](https://www.instagram.com/jositoandthekids/);
-* currently living in Krefeld, Germany;
-* coming from Poland;
+* currently living in [Krefeld](https://maps.app.goo.gl/NpLp4d6ZYthREfCM7), Germany;
+* coming from [Poland](https://maps.app.goo.gl/GDJ8Q7nQp4DKturx6);
 * 35 years old;
 * B1/B2 English;
 * A2 German;
@@ -29,6 +29,14 @@ I'm software engineer at [Metro Markets GmbH](https://www.metro-markets.de/). Fo
 * support teams with some coding / advisory if needed;
 * mentoring;
 * member of recruitment guild, support people team by joining "live coding" step of recruitment process;
+
+### Me as software engineer:
+* **TDD** -> Always trying to write test first, sadly not always have expectation given at the first place;
+* **NOT** being religious about 100% test coverage, also I often like to ask question: "what is a unit in your testing?";
+* **DDD** -> reality of my life is that I'm rather into Domain(ish) Driven Development, so... when approaching new service, new feature, always keeping business domain in mind;
+* **SOLID** -> it is a tool to reach goal not a goal itself 🙂, if I'm super strict about something is *SINGLE RESPONSIBILITY*
+* **DRY** -> I value more verbose and easy to read code over festival of traits / interfaces / abstract classes, but do not get me wrong, maintanability is also critical;
+* I like simple solutions so if I could I would go with [framework X](https://framework-x.org/) or [Slim](https://www.slimframework.com/) anywhere it is possible;
 
 ## Employment history:
 ### Metro Martkets GmbH | Dusseldorf, Germany | 02-2021 - present
