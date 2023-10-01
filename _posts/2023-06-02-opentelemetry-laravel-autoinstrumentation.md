@@ -5,6 +5,8 @@ date: 2023-06-02
 tags: php laravel opentelemetry grafana tracing
 ---
 
+# opentelemetry rc1 released, have to say works really stable! Go for it and test :)
+
 # Laravel tracing autoinstrumentation using ext-opentelemetry.
 
 Below we will cover opentelemetry auto instrumentation by using barebones laravel served from docker container with roadrunner.
@@ -348,33 +350,28 @@ service:
 
 #### Instrumenting laravel app
 
-First we need to let our app to install dependencies with `dev` stability:
+First we need to let our app to install dependencies with `beta` stability:
 ```json
-    "minimum-stability": "dev",
+    "minimum-stability": "beta",
     "prefer-stable": true,
 ```
 
 Next we are installing required dependencies:
 ```bash
-docker compose exec app composer require open-telemetry/api:1.0.0beta9 open-telemetry/sdk:1.0.0beta10 open-telemetry/transport-grpc:1.0.0beta4 open-telemetry/exporter-otlp:1.0.0beta8 open-telemetry/opentelemetry-propagation-traceresponse:0.0.1 open-telemetry/opentelemetry-auto-laravel:0.0.5
+docker compose exec app composer require open-telemetry/transport-grpc:1.0.0RC1 open-telemetry/exporter-otlp:1.0.0RC1 open-telemetry/opentelemetry-auto-laravel
 ```
 
 Next we have to feed app service with proper environment:
 ```yaml
 services:
-	app:
-		environment:
+  app:
+    environment:
       OTEL_PHP_AUTOLOAD_ENABLED: true
       OTEL_SERVICE_NAME: app-otel-service
       OTEL_TRACES_EXPORTER: otlp
-      OTEL_TRACES_PROCESSOR: simple
+      OTEL_TRACES_PROCESSOR: batch
       OTEL_EXPORTER_OTLP_PROTOCOL: grpc
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://collector:4317'
-      OTEL_PROPAGATORS: baggage,tracecontext
-      OTEL_METRICS_EXPORTER: none
-      OTEL_LOGS_EXPORTER: none
-      OTEL_LOGS_PROCESSOR: batch
-      OTEL_PHP_FIBERS_ENABLED: false
 ```
 
 After performing multiple times (we are using batch processor, so only if we will have enough cached traces will be send) request to our health check endpoint we:
@@ -442,7 +439,7 @@ services:
       - "3000:3000"
 
 volumes:
-	tempodata:
+  tempodata:
 ``` 
 
 #### tempo-config.yaml (next to docker-compose.yml file)
@@ -591,13 +588,11 @@ Overall using opentelemetry extension is very convenient way of tracing / profil
 
 Basically installing few dependencies and setting up few environment variables and without coding can autoinstrument our application to start propagating traces. We can send them to any opentelemetry compatible collector / storage.
 
-Very important note:
+~~Very important note:~~
 
-opentelemetry for PHP is unstable -> as for date of writing this note we have to be aware that in any moment can cause "segmentation fault" and our app is dead.
-
-Personally during stress testing I noticed that when we do have more exceptions or generally bigger spans are more likely to cause issue.
-
-Overall future is bright and super interesting.
+~~opentelemetry for PHP is unstable -> as for date of writing this note we have to be aware that in any moment can cause "segmentation fault" and our app is dead.~~
+~~Personally during stress testing I noticed that when we do have more exceptions or generally bigger spans are more likely to cause issue.~~
+~~Overall future is bright and super interesting.~~
 
 Just if someone needs working example combining all the config files from above, here is [a repo to checkout.](https://github.com/gulasz101/lara-otel-service)
 
@@ -605,4 +600,5 @@ Just:
 * clone it
 * `docker compose up -d`
 * `docker compose exec app composer install`
+* `docker compose exec app php artisan migrate`
 * play around with [grafana](http://localhost:3000)
