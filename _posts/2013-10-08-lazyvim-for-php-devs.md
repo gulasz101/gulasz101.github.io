@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "Lazyvim for PHP development"
+title: "LazyVim for PHP development"
 date: 2023-10-08
-tags: Lazyvim nvim lsp php
+tags: lazyvim vim nvim lsp php
 ---
 ### LazyVim for php devs -> minimal setup
 
@@ -46,7 +46,7 @@ vimtutor
 ```
 It will take you 30 minutes to get up to speed with vim movements, trust me, you can skip it now, but you will eventually do it.
 And this actually can be fun! Check out video:
-<iframe width="100%" height="400" src="https://www.youtube.com/embed/y6VJBeZEDZU?si=-gJsCpJOyj3q9fKI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="100%" height="380" src="https://www.youtube.com/embed/y6VJBeZEDZU?si=-gJsCpJOyj3q9fKI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 After having some fun you can go and finally install [LazyVim](https://www.lazyvim.org/installation). Steps are rather straightforward
 
@@ -300,4 +300,6 @@ require("lazy").setup({
 
 Having all steps above done correctly you are able now to use nvim with your code very pleasant way.
 
-{% video /assets/screencasts/2023-10-08-screencast.webm 100% %}
+<video width="100%" preload="metadata" controls="">
+  <source src="/assets/screencasts/2023-10-08-screencast.webm" type="video/webm; codecs=vp8, vorbis">
+</video>
