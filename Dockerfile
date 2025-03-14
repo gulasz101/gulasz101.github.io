@@ -1,12 +1,4 @@
-FROM ruby:3.0-alpine
-
-ENV BUNDLE_HOME=/usr/local/bundle
-ENV BUNDLE_APP_CONFIG=/usr/local/bundle
-ENV BUNDLE_DISABLE_PLATFORM_WARNINGS=true
-ENV BUNDLE_BIN=/usr/local/bundle/bin
-ENV GEM_BIN=/usr/gem/bin
-ENV GEM_HOME=/usr/gem
-ENV RUBYOPT=-W0
+FROM ruby:3-alpine
 
 ENV JEKYLL_VAR_DIR=/var/jekyll
 # ENV JEKYLL_DOCKER_TAG=<%= @meta.tag %>
@@ -18,54 +10,17 @@ ENV JEKYLL_BIN=/usr/jekyll/bin
 ENV JEKYLL_ENV=development
 
 RUN apk update
-RUN apk add --no-cache build-base gcc cmake git
-
-RUN echo "gem: --no-ri --no-rdoc" > ~/.gemrc
-RUN unset GEM_HOME && unset GEM_BIN && \
-  yes | gem update --system
-
-#
-# Gems
-# Main
-#
-
-RUN unset GEM_HOME && unset GEM_BIN && yes | gem install --force bundler
-RUN gem install jekyll -v "3.9.3" 
-
-RUN gem install \
-  html-proofer \
-  RedCloth \
-  kramdown \
-  jemoji \
-  minima \
-  github-pages \
-  kramdown-parser-gfm
-
-RUN gem install \
-  jekyll-reload \
-  jekyll-mentions \
-  jekyll-coffeescript \
-  # jekyll-sass-converter \
-  jekyll-commonmark \
-  jekyll-paginate \
-  jekyll-compose \
-  jekyll-assets \
-  jekyll-redirect-from \
-  jekyll-github-metadata \
-  jekyll-sitemap \
-  jekyll-feed
-
-RUN bundle init 
-RUN bundle add jekyll --version "3.9.3" \
-  && bundle add webrick \
-  && bundle add minima \
-  && bundle add kramdown-parser-gfm \
-  && bundle update
+RUN apk add git build-base openssl-dev
 
 EXPOSE 4000
 EXPOSE 35729
 
 WORKDIR /srv/jekyll
-VOLUME /srv/jekyll
 
-CMD ["jekyll", "--help"]
+RUN git clone https://github.com/gulasz101/gulasz101.github.io.git /srv/jekyll
+RUN bundle update
+RUN bundle install
+
+CMD ["jekyll", "serve", "--livereload", "--host", "0.0.0.0"]
+
+VOLUME /srv/jekyll
