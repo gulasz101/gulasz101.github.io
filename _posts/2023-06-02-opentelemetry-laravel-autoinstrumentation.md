@@ -3,11 +3,12 @@ layout: post
 title: "OpenTelemetry Tracing Laravel Autoinstrumentation"
 date: 2023-06-02
 tags: php laravel opentelemetry grafana tracing
+categories: [Observability]
 ---
 
 # opentelemetry rc1 released, have to say works really stable! Go for it and test :)
 
-# Laravel tracing autoinstrumentation using ext-opentelemetry.
+# Laravel tracing autoinstrumentation using ext-opentelemetry
 
 Below we will cover opentelemetry auto instrumentation by using barebones laravel served from docker container with roadrunner.
 
@@ -16,9 +17,11 @@ Roadrunner is going to start our root trace, and we will use laravel autoinstrum
 Traces will be send to [Opentelemetry collector](https://opentelemetry.io/docs/collector/) which will be forwarding everything to [grafana tempo](https://grafana.com/docs/tempo/latest/getting-started/tempo-in-grafana/) and finally we will be able to look through them exploring our [local grafana instance](http://localhost:3000).
 
 ## Preparation
+
 ### App runtime
 
 We need to start from basic dockerfile for our application.
+
 ```Dockerfile
 ARG PHP_VERSION=8.2
 
@@ -44,7 +47,7 @@ RUN install-php-extensions \
     redis \
     protobuf \
     opentelemetry \
-	 pdo_pgsql
+  pdo_pgsql
 
 
 COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
@@ -59,11 +62,13 @@ USER php
 ```
 
 Next step is to build docker image based on it:
+
 ```bash
 mkdir lara-otel-project
 cd lara-otel-project
 docker build --tag lara-otel .
 ```
+
 ### Installing basic dependencies
 
 So now we have to:
@@ -75,18 +80,21 @@ So now we have to:
 
 As following:
 
-#### First step is easy:
+#### First step is easy
+
 ```
 docker run -it --rm -v $PWD:/app lara-otel composer create-project laravel/laravel service
 ```
- 
-#### Now we need to do some basic setup of roadrunner:
+
+#### Now we need to do some basic setup of roadrunner
+
 ```
 docker run -it --rm -v $PWD/service:/app lara-otel composer require spiral/roadrunner-laravel -W
 docker run -it --rm -v $PWD/service:/app lara-otel php ./artisan vendor:publish --provider='Spiral\RoadRunnerLaravel\ServiceProvider' --tag=config
 ```
 
-#### Very basic rr config file:
+#### Very basic rr config file
+
 ```yaml
 version: "2.7"
 
@@ -111,11 +119,13 @@ http:
 ```
 
 Let's test run this file:
+
 ```
 docker run -it --rm -v $PWD/service:/app -v $PWD/rr-config.yaml:/app/.rr.yaml -p 8080:8080 lara-otel rr serve -c ./.rr.yaml
 ```
 
 We should see something like:
+
 ```
 ❯ docker run -it --rm -v $PWD/service:/app -v $PWD/rr-config.yaml:/app/.rr.yaml -p 8080:8080 lara-otel rr serve -c ./.rr.yaml
 [INFO] RoadRunner server started; version: 2.10.1, buildtime: 2022-05-19T10:34:00+0000
@@ -131,6 +141,7 @@ We should see something like:
 ```
 
 And eventually we can test if app is alive:
+
 ```
 ~/Projects/otel-php-laravel
 ❯ curl -o /dev/null -s -w "%{http_code}\n" -v localhost:8080
@@ -160,6 +171,7 @@ And eventually we can test if app is alive:
 #### docker-compose file
 
 We will go super basic: we will setup basic postgres so we will have some database connection info trace and app service based on already built image to run our application and that is all we need to perform health check and continue to actual tracing.
+
 ```yaml
 version: "3.6"
 
@@ -230,6 +242,7 @@ volumes:
 so our application by just checking its health will have enough to do to provide us meaningful traces.
 
 Assuming you application is up and running (`docker compose up -d`) please install following dependency:
+
 ```bash
 docker compose exec app composer require spatie/laravel-health
 
@@ -240,6 +253,7 @@ docker compose exec app php artisan migrate
 ```
 
 To make our application busy we will register some health checks in respective service provider, so it should look as following:
+
 ```php
 <?php
 
@@ -281,6 +295,7 @@ class HealthServiceProvider extends ServiceProvider
 ```
 
 Now after running health check against local instance we should see output as following:
+
 ```bash
 ❯ docker compose exec app php artisan health:list
 
@@ -296,7 +311,7 @@ Now after running health check against local instance we should see output as fo
              ⇂ An exception occurred when connecting to Redis: `Connection refused`
   OK         Used Disk Space › 11%
 ```
- 
+
 ## Opentelemetry collector
 
 Finally! After all this boilerplate preparation we can start setting up actual subject of this article.
@@ -314,6 +329,7 @@ Here we will perform basic configuration of our collector, which will display al
 #### Basic configuration file
 
 We will first start from `otel-collector-config.yml` file placed next to `docker-compose.yml`. For now we are instrumenting collector to output all traces as log.
+
 ```yaml
 receivers:
   otlp:
@@ -351,17 +367,20 @@ service:
 #### Instrumenting laravel app
 
 First we need to let our app to install dependencies with `beta` stability:
+
 ```json
     "minimum-stability": "beta",
     "prefer-stable": true,
 ```
 
 Next we are installing required dependencies:
+
 ```bash
 docker compose exec app composer require open-telemetry/transport-grpc:1.0.0RC1 open-telemetry/exporter-otlp:1.0.0RC1 open-telemetry/opentelemetry-auto-laravel
 ```
 
 Next we have to feed app service with proper environment:
+
 ```yaml
 services:
   app:
@@ -375,11 +394,13 @@ services:
 ```
 
 After performing multiple times (we are using batch processor, so only if we will have enough cached traces will be send) request to our health check endpoint we:
+
 ```bash
 curl -vvv localhost:8080/health?fresh -H "Accept: application/json"
 ```
 
 Our collector should output something like:
+
 ```bash
 otel-php-laravel-collector-1  | Span #28
 otel-php-laravel-collector-1  |     Trace ID       : cd8b44caebd1ab028ca4a115e169483e
@@ -402,7 +423,7 @@ otel-php-laravel-collector-1  |      -> db.statement: Str(insert into "health_ch
 
 !! BOOM !! Our application is instrumented to dispatch opentelemetry traces over grpc to collector.
 
-## Human readable traces with tempo and grafana.
+## Human readable traces with tempo and grafana
 
 So reading logs proving we have instrumented our application correct, but this is far from ideal solution.
 
@@ -440,7 +461,7 @@ services:
 
 volumes:
   tempodata:
-``` 
+```
 
 #### tempo-config.yaml (next to docker-compose.yml file)
 
@@ -493,13 +514,14 @@ datasources:
 
 So above we just setup single data source called "Tempo" pointing at service "tempo" so later in grafana under *Explore* tab we can look for our traces.
 
-#### Persisting traces in tempo.    
+#### Persisting traces in tempo
 
 Now we have to instrument our collector to forward all traces to tempo instead outputting them as logs.
 
 What we have to do is to add another exporter to our config, this will be exporter pointing at grpc port of tempo `tempo:4317`.
 
 Our config has to look as following:
+
 ```yaml
 receivers:
   otlp:
@@ -527,11 +549,13 @@ service:
 ```
 
 It is time to restart our local stack:
+
 ```bash
 docker compose restart
 ```
 
 Now after performing multiple requests to our health check endpoint:
+
 ```bash
 curl -vvv localhost:8080/health?fresh -H "Accept: application/json"
 ```
@@ -542,11 +566,12 @@ We should see result as following, with which we can play around.
 
 ![grafana in action](/assets/images/2023-06-02-opentelemetry-laravel-autoinstrumentation.png)
 
-## Instrumenting roadrunner to create parent traces.
+## Instrumenting roadrunner to create parent traces
 
 So overall, roadrunner has builtin middleware we can configure to decorating our incoming requests into parent traces.
 
 We just need to enable it, so final rr configuration should look as following:
+
 ```yaml
 version: "2.7"
 
@@ -597,6 +622,7 @@ Basically installing few dependencies and setting up few environment variables a
 Just if someone needs working example combining all the config files from above, here is [a repo to checkout.](https://github.com/gulasz101/lara-otel-service)
 
 Just:
+
 * clone it
 * `docker compose up -d`
 * `docker compose exec app composer install`

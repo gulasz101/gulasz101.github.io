@@ -3,6 +3,7 @@ layout: post
 title: "LazyVim for PHP development"
 date: 2023-10-08
 tags: lazyvim vim nvim lsp php
+categories: [Tooling]
 ---
 ### LazyVim for php devs -> minimal setup
 
@@ -10,9 +11,10 @@ So everyone from time to time likes to try out different thinks, for different r
 
 Below I will share my findings and what in my humble opinion is the easiest way to get into php development with nvim.
 
-### Setup expectations:
+### Setup expectations
 
 First we need to setup realistic expectations, what we want from our editor:
+
 - code highlighting and autocompletion;
 - code refactoring capabilities;
 - navigation through code (go to definition, find usages etc);
@@ -33,17 +35,20 @@ Why not to go with OEM nvim? It is simple, there are tons of plugins, and you wi
 
 ### Context
 
-- All action below I'm performing on arch linux. 
+- All action below I'm performing on arch linux.
 - I am also using LazyVim at work on my macbook pro (late 2019, so pre ARM), so all the steps should be easy to reproduce.
 - I have also installed php 8.2 on my host operating system as for performing php code analysis is just way more convenient from host.
 - I have installed [composer](https://getcomposer.org/download/) on my host machine so it is just more convenient to work that way without having to [run any docker images](https://hub.docker.com/_/composer) every time I need to perform some action.
-- I am using [WezTerm](https://wezfurlong.org/wezterm/index.html) as it renders super fast and works cross platform (works great also in W11). 
+- I am using [WezTerm](https://wezfurlong.org/wezterm/index.html) as it renders super fast and works cross platform (works great also in W11).
 
 ### Basics
+
 Ofc from the most important part:
+
 ```shell
 vimtutor
 ```
+
 It will take you 30 minutes to get up to speed with vim movements, trust me, you can skip it now, but you will eventually do it.
 And this actually can be fun! Check out video:
 <iframe width="100%" height="380" src="https://www.youtube.com/embed/y6VJBeZEDZU?si=-gJsCpJOyj3q9fKI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
@@ -59,9 +64,10 @@ After having some fun you can go and finally install [LazyVim](https://www.lazyv
 
 #### LSP
 
-LazyVim comes with preconfigured [nvim-lspconfig](https://www.lazyvim.org/plugins/lsp#nvim-lspconfig), 
+LazyVim comes with preconfigured [nvim-lspconfig](https://www.lazyvim.org/plugins/lsp#nvim-lspconfig),
 what we need to do is just to extend this configuration so it we are sure we have all language server installed.
 To do so we have to create following file:
+
 ```lua
 -- ~/.config/nvim/lua/plugins/lspconfig.lua
 
@@ -96,6 +102,7 @@ return {
 ```
 
 What happens above? We are making sure LazyVim will install for us language servers for:
+
 - json -> jsonls
 - docker -> dockerls, docker_compose_language_service,
 - php -> intelephense (strongly recommend to pay **12 EUR** for getting license and all the functionalities!!),
@@ -135,6 +142,7 @@ require("lazy").setup({
 
 Now as we have already code autocompletion and basic diagnostics delivered, we can instrument our LazyVim installation to provide us better code highlighting.
 To do so we have to extend Tree-sitter configuration by creating following file:
+
 ```lua
 -- ~/.config/nvim/lua/plugins/treesitter.lua
 
@@ -153,6 +161,7 @@ return {
   },
 }
 ```
+
 #### Static analysis and code formatting
 
 **intelephense** is great, but it provides only basic code diagnostics as well as formatting in rather relaxed approach to PSR-12.
@@ -162,14 +171,19 @@ As there is not OEM approach to do use those tools within neovim we are going to
 The one and only! **[null-ls](https://github.com/nvimtools/none-ls.nvim)**.
 
 Before getting into configuration of language server we need to have some executables in our system first.
+
 - phpstan
+
 ```shell
 composer global require phpstan/phpstan
 ```
+
 - php-cs-fixer
+
 ```shell
 composer global require friendsofphp/php-cs-fixer
 ```
+
 For cs fixer I propose to keep configuration in composer home directory:
 
 ```php
@@ -201,8 +215,11 @@ return $config
     )
 ;
 ```
-##### Having two steps above done we can instrument **null-ls** to perform diagnostics and formatting.
+
+##### Having two steps above done we can instrument **null-ls** to perform diagnostics and formatting
+
 To do so we have to edit following file.
+
 ```lua
 -- ~/.config/nvim/lua/plugins/nonels.lua
 
@@ -234,6 +251,7 @@ return {
 }
 
 ```
+
 #### Executing tests
 
 Last part we want to cover it a way to execute tests without switching to another terminal.
@@ -254,10 +272,12 @@ return {
   },
 }
 ```
+
 We have to not only to add neotest, but as well we have to install phpunit adapter for neotest. [neotest-phpunit](https://github.com/olimorris/neotest-phpunit).
 There is also one available for pest.
 
 Keep in mind we have to add plugin for lazy general config:
+
 ```lua
 -- ~/.config/nvim/lua/config/lazy.lua
 -- look for similar lines and extend them respectively
@@ -269,7 +289,9 @@ require("lazy").setup({
   },
 })
 ```
+
 #### Docker linting
+
 ```lua
 -- ~/.config/nvim/lua/plugins/lint.lua
 return {
@@ -284,6 +306,7 @@ return {
   }
 }
 ```
+
 ```lua
 -- ~/.config/nvim/lua/config/lazy.lua
 -- look for similar lines and extend them respectively
