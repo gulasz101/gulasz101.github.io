@@ -21,5 +21,5 @@
 > After every edit of `_config.yml`
 > it is required to execute `bundle exec jekyll build`
 
-> [!INFO]
+> [!NOTE]
 >Link to page: [https://gulasz101.github.io/](https://gulasz101.github.io/)
