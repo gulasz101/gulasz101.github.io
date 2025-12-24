@@ -39,7 +39,7 @@ After working for last 18 months with odoo WMS team. Reading tons of tutorials h
   - [grafana/loki](https://grafana.com/oss/loki/) - distributed backend for **L**ogs
   - [**G**rafana](https://grafana.com/) - visualize everything
   - [grafana/tempo](https://grafana.com/oss/tempo/) - **T**racing backend
-  - [prometheus][https://prometheus.io/] - for **M**etrics
+  - [prometheus](https://prometheus.io/) - for **M**etrics
   - [opentelemetry collector](https://opentelemetry.io/docs/collector/) - to proxy all your telemetry data to respective backends
 
 > Everything above is assembled to single docker compose file.
