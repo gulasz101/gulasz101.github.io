@@ -8,8 +8,29 @@
 
 ### Ruby setup
 
+#### Fedora
+
 * `sudo dnf install ruby ruby-devel`
 * `gem install bundler`
+
+### macos
+
+```sh
+# install rbenv
+brew install rbenv ruby-build
+
+# init rbenv
+echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
+# For Bash: echo 'eval "$(rbenv init - bash)"' >> ~/.bash_profile
+source ~/.zshrc # Or restart your terminal
+
+rbenv install 3.4.8 # Or another version like 3.3.3
+rbenv global 3.4.8
+
+# restart env or source ~/.zshrc
+# ❯ ruby -v
+# ruby 3.4.8 (2025-12-17 revision 995b59f666) +PRISM [arm64-darwin25]
+```
 
 ## Run it on Local
 
