@@ -2,7 +2,7 @@
 layout: post
 title: "LazyVim for PHP development"
 date: 2023-10-08
-tags: lazyvim vim nvim lsp php
+tags: [lazyvim vim nvim lsp php]
 categories: [Tooling]
 ---
 ### LazyVim for php devs -> minimal setup
