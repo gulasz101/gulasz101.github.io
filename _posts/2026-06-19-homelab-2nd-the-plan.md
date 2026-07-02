@@ -35,7 +35,7 @@ Two boxes, clear roles:
 
 | Node | Role | Specs |
 |------|------|-------|
-| **homelab-2nd** | Compute + ephemeral storage | Debian 13, 8 vCPU, 31 GB RAM, 408 GB NVMe (LVM). LAN `192.168.1.179`. |
+| **homelab-2nd** | Compute + ephemeral storage | Debian 13, 8 vCPU, 31 GB RAM, 408 GB NVMe (LVM). LAN `10.0.0.1`. |
 | **openmediavault (OMV)** | Durable NAS + object storage | Debian 13, 6 cores, 15 GB RAM. Drives: 932 GB, 3.7 TB, 1.4 TB. |
 
 The split is deliberate:
@@ -96,14 +96,14 @@ All credentials are SOPS-encrypted `*Secret` resources, decrypted in-cluster by 
 creation_rules:
   - path_regex: .*.yaml
     encrypted_regex: ^(data|stringData)$
-    age: age195fednlfd8q35tvyvf7umlseu4ez37k2m2d0wjawmje6nr9kzgyquhau9s
+    age: <REDACTED_KEY>
 ```
 
 ### 4. Cloudflare Tunnel for ingress
 
 No open router ports. Origin is hidden. The public never sees my home IP.
 
-This requires moving DNS nameservers from OVH to Cloudflare for `voitech.dev` — and before flipping, I need to recreate all existing DNS records in Cloudflare so nothing breaks. The apex record, MX records (even though OVH says no mailbox is actually enabled... classic), TXT records. Then add `homelab.voitech.dev` CNAME pointing to the tunnel.
+This requires moving DNS nameservers from OVH to Cloudflare for `example.com` — and before flipping, I need to recreate all existing DNS records in Cloudflare so nothing breaks. The apex record, MX records (even though OVH says no mailbox is actually enabled... classic), TXT records. Then add `homelab.example.com` CNAME pointing to the tunnel.
 
 cert-manager + Let's Encrypt (or Cloudflare origin certs) handles TLS.
 
@@ -120,7 +120,7 @@ Here's the plan, in order:
 3. **age keypair + SOPS** wired into the repo
 4. **k3s bootstrap** on homelab-2nd + Flux bootstrapped onto the repo
 5. **CNPG** for Mattermost Postgres, with S3 backups → OMV MinIO
-6. **cert-manager + Cloudflare Tunnel** ingress for `homelab.voitech.dev` (DNS migration first)
+6. **cert-manager + Cloudflare Tunnel** ingress for `homelab.example.com` (DNS migration first)
 7. **Mattermost** via HelmRelease — invite-only, file storage → MinIO, Postgres via CNPG
 
 Every step gets tracked in dated notes. Those notes become these blog posts. That's the deal.
