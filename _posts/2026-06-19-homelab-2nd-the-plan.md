@@ -148,4 +148,4 @@ The next post will be the actual first steps — setting up the `gulasz101` user
 
 Repo is here if you want to follow along: [github.com/gulasz101/homelab-2nd](https://github.com/gulasz101/homelab-2nd)
 
-Cheers! 🍺
+Cheers! 🎸
