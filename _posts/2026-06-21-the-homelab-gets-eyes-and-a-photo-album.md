@@ -525,4 +525,8 @@ After that: the LLM hub. LiteLLM + OpenWebUI. Because what's a homelab without a
 
 Repo is here if you want to follow along: [github.com/gulasz101/homelab-2nd](https://github.com/gulasz101/homelab-2nd)
 
+---
+
+*This post was AI-assisted — the blog post and illustrations were crafted with help from Hermes Agent running local models on the homelab itself. I made the engineering decisions; the agent helped with the writing and art. 🤖✨*
+
 Cheers! 🎸
