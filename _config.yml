@@ -17,10 +17,10 @@ timezone: Europe/Berlin
 title: Wojciech Guła
 email: gulasz101 [at] gmail [dot] com
 
-tagline: WMS TTL @ Metro Markets GmbH # it will display as the subtitle
+tagline: DevOps Engineer | Reduced 30+ min deployment downtime to zero-downtime releases on platform serving 40%+ of revenue | k3s, FluxCD, LiteLLM, OTel, CNPG # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
-  Team Lead at Metro Markets GmbH working with odoo as WMS
+  DevOps Engineer — Kubernetes, GitOps, AI infrastructure, observability. Self-hosted k3s platform with 55+ workloads, LiteLLM gateway, CNPG, OpenTelemetry.
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.

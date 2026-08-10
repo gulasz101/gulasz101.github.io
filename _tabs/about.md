@@ -4,127 +4,144 @@ icon: fas fa-info-circle
 order: 4
 ---
 
-# Hi there
+# About Me
 
-## My name is Wojtek (like **VOI**ce and **TECH**nology)
+## Wojciech Guła — DevOps / Infrastructure Engineer
 
-I'm software engineer at [Metro Markets GmbH](https://www.metro-markets.de/). For everyday work I'm member of software operations team. My main focus is how to make developer experience of my colleagues as smooth as possible.
+**13+ years building production systems.** From introducing Docker to a Swiss SaaS company in 2013 to operating a self-hosted Kubernetes platform with 55+ workloads today.
 
-### Little bit about me
+Currently pivoting from Engineering Manager to IC role for hands-on infrastructure work. Based in Düsseldorf, Germany → relocating to Poland.
 
-* still lover of PHP (10++ years);
-* big RUST enthusiast 🤩;
-* I love my two cats and wife;
-* amateur [photographer](https://insidepumpkin.com/); (sorry for cert issue)
-* bass 🎸 player [@ Josito And The Kids](https://www.instagram.com/jositoandthekids/);
-* currently living in [Krefeld](https://maps.app.goo.gl/NpLp4d6ZYthREfCM7), Germany;
-* coming from [Poland](https://maps.app.goo.gl/GDJ8Q7nQp4DKturx6);
-* 35 years old;
-* B1/B2 English;
-* A2 German;
+- 📧 [gula.wojciech@gmail.com](mailto:gula.wojciech@gmail.com)
+- 🔗 [LinkedIn](https://www.linkedin.com/in/wojciech-guła-57797070/) · [GitHub](https://github.com/gulasz101) · [Homelab Repo](https://github.com/gulasz101/homelab-2nd)
+- 🎸 Bass player · 🥦 Vegetarian · 📷 Amateur photographer at [insidepumpkin.com](https://insidepumpkin.com)
 
-### Regarding my current position
+---
 
-* member of architects guild, analysing together with other members most common problems and proposing writing down documentation with guidelines for our engineers;
-* working on opentelemetry autoinstrumentation solution that will cover most of our services and will require least possible effort from teams to get proper observability levels on their services;
-* promoting and supporting our internal developer portal (built with backstage);
-* support teams with some coding / advisory if needed;
-* mentoring;
-* member of recruitment guild, support people team by joining "live coding" step of recruitment process;
+## What I Do
 
-### Me as software engineer
+I build and operate infrastructure that stays quiet at 3 AM. My work spans three areas:
 
-* **TDD** -> Always trying to write test first, sadly not always have expectation given at the first place;
-* **NOT** being religious about 100% test coverage, also I often like to ask question: "what is a unit in your testing?";
-* **DDD** -> reality of my life is that I'm rather into Domain(ish) Driven Development, so... when approaching new service, new feature, always keeping business domain in mind;
-* **SOLID** -> it is a tool to reach goal not a goal itself 🙂, if I'm super strict about something is *SINGLE RESPONSIBILITY*
-* **DRY** -> I value more verbose and easy to read code over festival of traits / interfaces / abstract classes, but do not get me wrong, maintanability is also critical;
-* I like simple solutions so if I could I would go with [framework X](https://framework-x.org/) or [Slim](https://www.slimframework.com/) anywhere it is possible;
+### DevOps & Platform Engineering
 
-## Employment history
+At METRO Markets GmbH, I led the transformation of a WMS platform serving **40%+ of company revenue** — the platform that 150 warehouse staff depend on to do their jobs.
 
-### Metro Martkets GmbH | Dusseldorf, Germany | 02-2021 - present
+- **Reduced deployment downtime from 30–45 min to zero-downtime rolling releases** (multiple deploys per day)
+- **Zero production incidents** over the last 3 months (down from ~8/month)
+- Rebuilt CI/CD from "build → push → festival of Sentry errors" to full guardrails: security scans, unit tests, Cypress E2E, Sonar, separate DB migration jobs
+- Cut PostgreSQL query latency from tens of seconds to sub-second using `pg_stat_statements`, `pg_badger`, and Google Query Insights
+- Grafana alerting, log-based metrics, K6 performance regression tests, rotating support hero role
+- Team throughput improved ~6× over two years
 
-### Backend software engineer
+### AI Infrastructure
 
-### Tech stack
+Self-hosted AI platform on Kubernetes — not a managed API wrapper:
 
-* php (7.4 - 8.2) + symfony framework with minor laravel episodes;
-* mysql, postgresql, rabbitmq, prometheus;
-* git, gitlab;
-* docker, kubernetes, gcp;
-* jira, slack, confluence;
+- **LiteLLM proxy** with 40+ model aliases, multi-provider routing (z.ai, Mistral, OpenRouter, Ollama, LM Studio), virtual keys, SSO admin UI
+- **Open WebUI** with OIDC-only login, LiteLLM backend, pgvector RAG, Firecrawl web search
+- **GPU inference** — Ollama serving nomic-embed-text on GTX 970M via NVIDIA Device Plugin + RuntimeClass
+- **Firecrawl v2 self-hosted** — API + worker + Playwright scraper + Redis + RabbitMQ, LAN-only, observability wired
+- Agentic coding harnesses (Hermes, OpenCode, Claude Code, GitHub Copilot) as daily driver
 
-### Position description
+### Observability
 
-Software engineer who worked across multiple teams, mainly close to warehouse operations, integrating warehouse with our internal ERP system. Analysing with stakeholders criteria for DOD for tickets. Integrating with carrier APIs. Majority of time worked with kanban, worker for some time with scrum. Had 3 months long episode of team leading replacing colleague on sick leave. Last year described above.
+OpenTelemetry from proof-of-concept to company-wide adoption at METRO:
 
-### Lourens Systems GmbH | Warsaw, Poland | 10-2013 - 12-2020
+- Extended an early OTel SDK draft into a production-grade PHP library (Composer-installable) covering PDO, Laravel, Symfony, Google Pub/Sub, and RabbitMQ tracing
+- Built PHP base Docker images with OTel extension included by default
+- Advocated adoption through demos, Tech Day talks, and education sessions
+- **Speaker**, Platform Engineering Meet-Up Cologne, Mar 2025 — *"From Chaos to Clarity: How OpenTelemetry Makes Microservice Monitoring Effortless"*
 
-### Software engineer
+---
 
-### Tech stack
+## Self-Hosted Kubernetes Platform (Homelab)
 
-* php (5.2 - 7.4) + multiple frameworks including, CakePHP, kohana, Zend, Lumen, Laravel, Slim, company internal php framework;
-* mysql, solr, elasticsearch;
-* subversion, git, github, gitlab;
-* virtualbox, vagrant, docker, kubernetes;
-* jira, slack;
+> **Public repo:** [github.com/gulasz101/homelab-2nd](https://github.com/gulasz101/homelab-2nd) — 315+ commits, 240 YAML files, 67 SOPS-encrypted secrets, 10 ADRs
+> **Tech blog:** [gulasz101.github.io](https://gulasz101.github.io) — documenting real infrastructure work
 
-### Position description
+A single-node k3s cluster running ~55 Deployments/StatefulSets across 20 namespaces, all delivered via **Flux CD** from a public GitHub repo. **GitOps is law** — everything in a public repo, zero plaintext secrets.
 
-Over years I was included in multiple projects, starting as outsourced fullstack dev dedicated to backend and CMS behind <https://watson.sh> news website.
-With time I was moved to position where I was maintaining / bugfixing and providing new features to both <https://smallinvoice.ch> and <https://pingen.ch>.
-Most challenging and at the same time were last 3 years of my employment at company when I had opportunity to migrate all our local development to docker, introduce multiple improvements to our internal framework like PSR-4 autoloading so eventually we could extend it with slim framework.
-Also I had opportunity to design ground for new APIs that were exposed to our integrators, also provided SDKs to automate process of API integration. I was also onboarding new employees and doing a lot research and overall fulfilling any adhoc request that was needed to move forward with our development.
+| Layer | Stack |
+|-------|-------|
+| **Cluster** | k3s, Flux CD v2.8.8, SOPS/age secrets |
+| **Database** | CloudNativePG — 8 Postgres clusters, WAL archiving to MinIO S3 |
+| **Storage** | MinIO on OpenMediaVault NAS (S3 + NFS) |
+| **Ingress** | 9 Cloudflare Tunnels — no router ports opened |
+| **Auth** | Authentik — central OIDC/OAuth2 for all services |
+| **Observability** | LGTM stack — Prometheus, Grafana, Loki, Tempo, OTel Collector DaemonSet |
+| **GPU** | NVIDIA Device Plugin + RuntimeClass, Ollama embeddings |
+| **Security** | Nightly scans: gitleaks, trivy, kubeconform, kube-score, pluto |
 
-### Mint Media Sp. z o.o. | Lublin, Poland | 09-2011 - 09-2023
+Cold boot recovery from full cluster outage with zero data loss. Rebuildable compute node from repo + backups. Every service is observable.
 
-### Web Developer
+Member of [kubecraft.dev](https://www.kubecraft.dev/) community — following DevOpsOS, HomeLabOS, and JobMagnetOS courses.
 
-### Tech stack
+---
 
-* php 5.xx + internal framework built with Zend Framework, html, jquery, css2;
-* postgresql;
-* subversion, git;
+## Technical Skills
 
-### Position description
+| Category | Technologies |
+|----------|-------------|
+| **Kubernetes** | k3s, GKE (application-level), Flux CD, Helm, Kustomize, NVIDIA Device Plugin, k9s |
+| **AI Infrastructure** | LiteLLM, Open WebUI, Ollama, pgvector, Firecrawl, GPU scheduling |
+| **Observability** | Prometheus, Grafana, Tempo, K6, Loki, Alertmanager, OpenTelemetry, Sentry |
+| **Databases** | PostgreSQL (CloudNativePG), MySQL, Redis, Elasticsearch, pgvector |
+| **Security** | SOPS/age, Authentik OIDC, Cloudflare Tunnels, gitleaks, trivy, kubeconform |
+| **CI/CD** | Flux GitOps, GitHub/GitLab CI, ArgoCD (review level), Cypress E2E, Sonar, TDD |
+| **Languages** | Python, PHP 7/8, SQL, Bash, JavaScript/TypeScript |
+| **Cloud** | GCP (application-level: Cloud SQL, Pub/Sub, GKE monitoring) |
+| **Messaging** | RabbitMQ, Redis, Google Pub/Sub |
 
-Providing backend for small contest/quizzes/find 5 differences (etc) apps embeded within Facebook Apps platform that time. As well building frontend based on design provided as PSD.
-Overall providing whole application from beginning to the end, including designing DB, building whole backend, frontend, testing deploying to PROD and DEV environments (deployment was simple sftp upload).
+---
 
-### SELECT Sp. z o.o. | Lublin, Poland | 06-2011 - 09-2011
+## Experience
 
-### Junior Software Engineer - INTERSHIP
+### Engineering Manager / Technical Team Lead — WMS Platform
+**METRO Markets GmbH** | Düsseldorf, Germany | *Jun 2023 – Present*
 
-### Tech stack
+Led the turnaround of a warehouse management system serving 40%+ of company revenue. Built the team from 4 to 8 internal engineers (managing up to 11 concurrent reports including 3 external agencies). Rebuilt the entire delivery process from scratch — from Monday-only deployments with 30–45 min downtime to multiple zero-downtime releases per day with ~90% code coverage.
 
-* php (4\|5), sugar crm, symfony, html, css, jquery;
-* mysql
+Planned and executed an 18-month Odoo Enterprise → Community Edition migration (v15 → v17), replacing the vendor mobile WMS app with in-house web apps. Designed push-only network topology for the migration, maintained rollback fallback throughout, rehearsed the cutover three times, and executed on release night with full rollback capability.
 
-### Position description
+### Software Development Engineer — Developer Experience
+**METRO Markets GmbH** | Düsseldorf, Germany | *Jan 2023 – Jun 2023*
 
-Developing simple tasks that were provided me by my "buddy".
-Providing simple changes to plugins for sugarCRM.
-Assisting setup of new project as well as providing simple CRUD functionalities by given request from our new client.
+Owned OpenTelemetry adoption from proof-of-concept to company-wide. Built the OTel SDK into a production-grade PHP library, drove cross-team Backstage adoption, and served as interim Team Lead for the Delivery Experience team (France warehouse launch).
 
-### Venitech Sp z o.o. | Warsaw, Poland | 05-2010 - 09-2011
+### Software Development Engineer — Fulfilment & Delivery Experience
+**METRO Markets GmbH** | Düsseldorf, Germany | *Feb 2021 – Jan 2023*
 
-### IT Support Consultant
+Backend engineer on microservices handling sale order flow, stock synchronisation, and carrier integrations across multiple countries. Co-founded the Delivery Experience team. Consistently rated high-performing (Level 4 High) on every review.
 
-### Position description
+### PHP Developer → Senior Engineer / Informal Architect
+**Lourens Systems GmbH** | Remote (Warsaw) | *Oct 2013 – Dec 2020*
 
-Providing support to business customers of bank which was our client.
-Responsibilities were as following:
+Full ownership of two SaaS products: **Pingen** (physical letter delivery) and **smallinvoice** (invoicing/ERP). Introduced Docker, built REST APIs consumed by enterprise integrators (including SAP), authored a Composer SDK, migrated core from Lumen to Laravel, led Solr → Elasticsearch migration, and introduced TDD with 6000+ PHPUnit tests.
 
-* maintaining banking app at client's place;
-* providing phone support to any technical difficulties;
-* onboarding new customers and providing extensive training;
+### PHP Developer
+**Mint Media** | Poland | *Sep 2011 – Sep 2013*
+
+Full-stack engineer building Facebook applications — quizzes, games, and interactive campaigns for external clients. Shipped under constant deadlines, always on time.
+
+---
+
+## Speaking & Publications
+
+- **Platform Engineering Meet-Up, Cologne — Mar 2025:** *"From Chaos to Clarity: How OpenTelemetry Makes Microservice Monitoring Effortless"*
+- **Metro Markets Tech Days, Oct 2023:** *"Introduction to OpenTelemetry"*
+- **Metro Markets Tech Days, May 2022:** *"Test Driven Development and its benefits"*
+- **Metro Markets Tech Talks, Sep 2021:** *"Mutagen — how to speed up local development when docker is so slow"*
+- **Technical Blog:** [gulasz101.github.io](https://gulasz101.github.io) — Kubernetes, GitOps, observability, AI infrastructure
+- **Public GitOps Repo:** [github.com/gulasz101/homelab-2nd](https://github.com/gulasz101/homelab-2nd)
+
+---
 
 ## Education
 
-Kielce University Of Technology
+**Information Technology** (4 years completed — degree not conferred)
+Kielce University of Technology | Poland | 2004–2008
 
-* Bachelor's degree in applied IT.
-* Got basic knowledge from software engineering, software design, networking.
-* Never provided diploma thesis project, so never got title.
+## Languages
+
+- **Polish** — Native
+- **English** — Full Professional Proficiency (working in English since 2013)
