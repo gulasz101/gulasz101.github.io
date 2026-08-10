@@ -11,7 +11,7 @@ order: 4
 Currently pivoting from Engineering Manager to IC role for flexibility and hands-on infrastructure work. Based in Düsseldorf, Germany → relocating to Poland.
 
 - 📧 [gula.wojciech@gmail.com](mailto:gula.wojciech@gmail.com)
-- 🔗 [LinkedIn](https://www.linkedin.com/in/wojciech-guła-57797070/) · [GitHub](https://github.com/gulasz101) · [Homelab Repo](https://github.com/gulasz101/homelab-2nd)
+- 🔗 [LinkedIn](https://www.linkedin.com/in/wojciech-gula-57797070/) · [GitHub](https://github.com/gulasz101) · [Homelab Repo](https://github.com/gulasz101/homelab-2nd)
 - 🎸 Bass player · 🥦 Vegetarian · 📷 Amateur photographer at [insidepumpkin.com](https://insidepumpkin.com)
 
 ---
