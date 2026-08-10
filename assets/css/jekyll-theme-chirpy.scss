@@ -11,10 +11,12 @@
 /* Custom style overrides for gulasz101.github.io */
 
 /* Fix: long site subtitle overlapping with sidebar nav menu */
+#sidebar .profile-wrapper {
+  padding-bottom: 6rem;
+}
+
 #sidebar .site-subtitle {
   display: block;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
   line-height: 1.4;
   word-break: break-word;
   overflow-wrap: break-word;
