@@ -4,8 +4,6 @@ icon: fas fa-info-circle
 order: 4
 ---
 
-# About Me
-
 ## Wojciech Guła — DevOps / Infrastructure Engineer
 
 **13+ years building production systems** — from introducing Docker to a Swiss SaaS company in 2013 to operating a self-hosted Kubernetes platform with 55+ workloads today. Working in IT since 2009; first software engineering position in 2011.
