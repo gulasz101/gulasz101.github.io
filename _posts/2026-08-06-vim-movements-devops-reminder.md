@@ -9,7 +9,7 @@ I've been using Vim (and Neovim) for years now. Not because I'm some purist who 
 
 This post is my personal reminder. I keep forgetting some of the less common movements, and instead of googling "how to jump to matching bracket vim" for the 47th time, I decided to write it all down in one place.
 
-It's optimized for **DevOps work** — meaning I focus on the movements and commands you actually need when editing Kubernetes manifests, Helm values, Terraform files, Docker Compose configs, shell scripts, and scrolling through massive log files. No fluff, no "how to exit vim" jokes (we've all heard them).
+It's optimized for **DevOps work** — meaning I focus on the movements and commands you actually need when editing Kubernetes manifests, Helm values, Flux Kustomize patches, SOPS-encrypted secrets, Docker Compose configs, shell scripts, and scrolling through massive log files. No fluff, no "how to exit vim" jokes (we've all heard them).
 
 If you want a more beginner-friendly intro, check out [Jake Wiesler's essential vim movements](https://www.jakewiesler.com/blog/essential-vim-movements) — that post got me started. This one is the expanded version, with all the DevOps-specific stuff added.
 
@@ -245,7 +245,7 @@ Marks let you bookmark positions in a file and jump back to them. In DevOps, thi
 | `:marks` | List all marks |
 | `:delm {a}` | Delete mark {a} |
 
-My workflow: when I'm editing a Terraform file and need to jump to a variable definition, I set a mark `ma` where I am, jump to the variable, copy the reference, then `'a` to get back. Much faster than `Ctrl-o` when you know you'll be bouncing between two spots.
+My workflow: when I'm editing a Flux Kustomize patch and need to jump to a referenced resource, I set a mark `ma` where I am, jump to the resource definition, copy the reference, then `'a` to get back. Much faster than `Ctrl-o` when you know you'll be bouncing between two spots.
 
 ---
 
@@ -311,7 +311,7 @@ containers:
 - `ci"` — change the image tag inside the quotes (`1.2.3` → type new tag)
 - `daB` — delete the entire `{}` block (if it were JSON)
 - `yi'` — yank the content inside single quotes
-- `vit` — select inside the XML/HTML tag (useful for Ansible templates)
+- `vit` — select inside the XML/HTML tag (useful for Helm template overrides)
 
 When you're editing a Helm template with `{{ }}` delimiters, text objects let you grab the whole expression in one shot. No more counting characters.
 
@@ -332,7 +332,7 @@ Text objects work with **any operator**. `>ib` indents everything inside `()`. `
 | `[/` | Jump to previous unmatched `/*` (comment start) |
 | `]/` | Jump to next unmatched `*/` (comment end) |
 
-`%` is essential when you're deep in nested JSON (hello, CloudFormation templates) or in a Terraform block with 5 levels of nesting. Put the cursor on any `{` and `%` takes you to its matching `}`. Hit `%` again to bounce back.
+`%` is essential when you're deep in nested YAML (hello, CNPG cluster manifests) or in a Helm template with 5 levels of nesting. Put the cursor on any `{` and `%` takes you to its matching `}`. Hit `%` again to bounce back.
 
 ---
 
@@ -419,12 +419,12 @@ This is where Vim becomes a proper IDE for DevOps. When you run `:make`, `:grep`
 " Run kubectl dry-run and capture output
 :make kubectl apply --dry-run=client -f %
 
-" Terraform validate
-:make terraform validate
+" Flux dry-run (validate manifests before pushing)
+:make flux build --dry-run
 ```
 
 {: .prompt-info }
-In Neovim, the built-in LSP client + `telescope.nvim` for fuzzy finding is a game-changer for DevOps. You get go-to-definition, references, and diagnostics for YAML, Terraform, and even Helm templates with the right LSP servers.
+In Neovim, the built-in LSP client + `telescope.nvim` for fuzzy finding is a game-changer for DevOps. You get go-to-definition, references, and diagnostics for YAML, Helm templates, and even Flux Kustomize patches with the right LSP servers.
 
 ---
 
@@ -609,25 +609,29 @@ n
 
 The `.` command repeats the last change. So after you do `cw5` once, `n` (next search result) followed by `.` (repeat change) lets you blast through the file in seconds.
 
-### Editing a Terraform file
+### Editing a CNPG cluster manifest
 
-```hcl
-resource "aws_instance" "web" {
-  ami           = "ami-12345678"
-  instance_type = "t3.micro"
-  count         = 3
-
-  tags = {
-    Name        = "web"
-    Environment = "production"
-  }
-}
+```yaml
+apiVersion: postgresql.cnpg.io/v2
+kind: Cluster
+metadata:
+  name: app-db
+  namespace: database
+spec:
+  instances: 3
+  storage:
+    size: "20Gi"
+    storageClass: "longhorn"
+  backup:
+    barmanObjectStore:
+      destinationPath: "s3://backups/cnpg/"
+      endpointURL: "http://minio.omv:9000"
 ```
 
-- `ci"` — change the AMI ID inside the quotes
-- `ci'` — change a value inside single quotes
-- `vaB` — select the entire resource block (everything inside `{}`)
-- `=aB` — auto-indent the entire block
+- `ci"` — change the storage size inside the quotes (`20Gi` → type new size)
+- `f:` then `w` — jump to the value after any colon in a key-value pair
+- `vap` — select the entire spec paragraph (everything under `spec:`)
+- `=ap` — auto-indent the entire block
 
 ### Shell script editing
 
