@@ -44,7 +44,7 @@ The live workspace is tiny — about 32 KiB of metadata, plus the actual vector 
 
 The decision is documented in [ADR-013](https://github.com/gulasz101/homelab-2nd/blob/main/docs/adr/adr-013-openviking-k3s-local-nodeport.md). Short version:
 
-> Run OpenViking in a dedicated `openviking` namespace on `homelab-2nd` k3s. Expose it internally via a NodePort Service on `192.168.1.179:30193`. Store live workspace on a `local-path` PVC. Back up memory state hourly as an `.ovpack` to OMV MinIO. Route embeddings to the in-cluster Ollama GPU service. Route VLM calls to the in-cluster LiteLLM proxy. No Cloudflare Tunnel, no public DNS.
+> Run OpenViking in a dedicated `openviking` namespace on `homelab-2nd` k3s. Expose it internally via a NodePort Service on `10.0.0.1:30193`. Store live workspace on a `local-path` PVC. Back up memory state hourly as an `.ovpack` to OMV MinIO. Route embeddings to the in-cluster Ollama GPU service. Route VLM calls to the in-cluster LiteLLM proxy. No Cloudflare Tunnel, no public DNS.
 
 ```mermaid
 flowchart TB
@@ -181,7 +181,7 @@ data:
 What happens above? The embedding path points at the in-cluster Ollama GPU service (same one that backs docs-mcp-server and Honcho). The VLM path points at the in-cluster LiteLLM proxy (same one Honcho uses). No public endpoints — everything stays inside the cluster.
 
 {: .prompt-info }
-The embedding path switched from the MacBook's local `http://192.168.1.179:30114/v1` to the in-cluster service `http://ollama-embeddings.gpu-embedding.svc.cluster.local:11434/v1`. Same model, same endpoint, just routed through k8s DNS instead of a LAN IP.
+The embedding path switched from the MacBook's local `http://10.0.0.1:30114/v1` to the in-cluster service `http://ollama-embeddings.gpu-embedding.svc.cluster.local:11434/v1`. Same model, same endpoint, just routed through k8s DNS instead of a LAN IP.
 
 ### 4. Deployment
 
@@ -351,7 +351,7 @@ spec:
       nodePort: 30193
 ```
 
-Reachable inside the network on `192.168.1.179:30193`. Hermes on the MacBook points `ovcli.conf` at that address.
+Reachable inside the network on `10.0.0.1:30193`. Hermes on the MacBook points `ovcli.conf` at that address.
 
 ### 6. Backup CronJob — hourly to MinIO
 
@@ -427,7 +427,7 @@ spec:
 
                   bucket = 'cnpg-backups'
                   prefix = 'openviking/backups/'
-                  endpoint = 'http://openmediavault.local:9000'
+                  endpoint = 'http://nas.example.com:9000'
                   access_key = os.environ['OPENVIKING_MINIO_ACCESS_KEY']
                   secret_key = os.environ['OPENVIKING_MINIO_SECRET_KEY']
                   local_path = os.environ['BACKUP_PACK']
@@ -453,7 +453,7 @@ spec:
                       if isinstance(payload, str):
                           payload = payload.encode('utf-8')
                       payload_hash = sha256(payload)
-                      host = 'openmediavault.local:9000'
+                      host = 'nas.example.com:9000'
                       headers = {
                           'host': host,
                           'x-amz-content-sha256': payload_hash,
@@ -480,7 +480,7 @@ spec:
                       ])
                       signing_key = get_signature_key(secret_key, date_stamp, region, service)
                       signature = hmac.new(signing_key, string_to_sign.encode('utf-8'), hashlib.sha256).hexdigest()
-                      auth_header = f'AWS4-HMAC-SHA256 Credential={access_key}/{credential_scope}, SignedHeaders={signed_headers}, Signature={signature}'
+                      auth_header = f'AWS4-HMAC-SHA256 Credential=<REDACTED> SignedHeaders={signed_headers}, Signature={signature}'
                       headers['Authorization'] = auth_header
                       url = f'{endpoint}{path}'
                       if query:
@@ -799,7 +799,7 @@ Commit, push, wait for Flux reconciliation.
 The migration was executed on 2026-08-15. Here's what actually happened:
 
 1. **MacBook container stopped** at ~22:30 CEST
-2. **Andrzej profile `.env` updated**: `OPENVIKING_ENDPOINT=http://192.168.1.179:30193`, API key regenerated for the k3s instance
+2. **Andrzej profile `.env` updated**: `OPENVIKING_ENDPOINT=http://10.0.0.1:30193`, API key regenerated for the k3s instance
 3. **Andrzej profile `config.yaml` updated**: `memory.openviking.use_ovcli_config: true`
 4. **`~/.openviking/ovcli.conf` updated** to point at k3s NodePort
 5. **Hermes gateway restarted** — live `viking_search` and `viking_remember` now hit k3s
@@ -816,8 +816,8 @@ User API keys in OpenViking are instance-scoped — they do not survive a migrat
 ### Verification
 
 ```bash
-curl http://192.168.1.179:30193/health   # → 200
-curl http://192.168.1.179:30193/ready    # → ready
+curl http://10.0.0.1:30193/health   # → 200
+curl http://10.0.0.1:30193/ready    # → ready
 ```
 
 - `ov status` from inside the cluster shows 1329 vectors rebuilt after restore, 0 pending
