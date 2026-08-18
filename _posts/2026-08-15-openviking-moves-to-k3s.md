@@ -13,8 +13,6 @@ That's... not great 🤷
 
 So I moved it into `homelab-2nd` k3s, where everything else lives. Flux-managed, SOPS-encrypted, backed up to MinIO, alerted through Loki and Alertmanager. The whole GitOps treatment.
 
-This time I'm writing it as a tutorial. Not a story. You can copy-paste every manifest below and it will work, because these are the actual files from the repo. If you want the "why" behind the decisions, there is an ADR for that — [ADR-013: OpenViking moves to k3s as a local-only NodePort service](https://github.com/gulasz101/homelab-2nd/blob/main/docs/adr/adr-013-openviking-k3s-local-nodeport.md). I will link it again where it matters.
-
 ## Why move it at all
 
 OpenViking is only consumed by the local Hermes `andrzej` profile. No public DNS, no Cloudflare Tunnel, no external users. It's a personal memory database. So why bother?
@@ -842,8 +840,7 @@ The old MacBook Docker container is stopped but its data remains. 24-hour rollba
 - After 24-hour smoke test passes: `docker rm openviking` and archive the old MacBook configs
 - The old watchdog Hermes cron job (`openviking-embedding-watchdog`, ID `331ef9caaf01`) has been removed — the PrometheusRules + Alertmanager config now own health/embedding alerting
 
-{: .prompt-info }
-Material for this post, and some parts of the post are AI assisted.
+>Material for this post, and some parts of the post are AI assisted.
 Models used while working on migration and post itself:
 - kimi-k2.7 (ollama cloud)
 - glm5.2 (ollama cloud)
