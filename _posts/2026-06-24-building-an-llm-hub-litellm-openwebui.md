@@ -13,7 +13,7 @@ So here's the thing. I have an AI agent (Andrzej) running my homelab. I have ano
 
 This is the story of how I built a single AI traffic hub in my homelab: a **LiteLLM proxy** that routes and meters all LLM traffic, and an **Open WebUI** frontend so my wife can just open a browser and chat. One namespace, two HelmReleases, two Postgres clusters, two Cloudflare Tunnels, ten SOPS secrets, and nine bugs that tried to ruin my day.
 
-Let's go 🍺
+Let's go 🥦
 
 ## The decision: why both?
 
@@ -500,7 +500,7 @@ This one was fun. CNPG's native `barmanObjectStore` backup method failed with:
 exec: "barman-cloud-check-wal-archive": executable file not found in $PATH
 ```
 
-Turns out `ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie` intentionally ships **without** Barman Cloud binaries. It's a minimal image. Who knew? (Well, the docs knew, but I didn't read them first 🍺)
+Turns out `ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie` intentionally ships **without** Barman Cloud binaries. It's a minimal image. Who knew? (Well, the docs knew, but I didn't read them first 🤦)
 
 **Options presented to the Supreme Leader:**
 - A) Switch to deprecated `18-system-trixie` (quick but deprecated)
@@ -647,4 +647,4 @@ The fix options were: Cloudflare edge Transform Rules (recommended, but dashboar
 4. **Point Hermes at the gateway** — switch `OPENAI_BASE_URL` to `https://llm.example.com/v1` with a dedicated virtual key
 5. **Favicon rewrites** in Cloudflare admin (when Wojtek gets around to it)
 
-The LLM hub is live. My wife has a chat UI. My AI agents have a single gateway. I can see token spend in Prometheus. And I survived nine bugs to tell the tale 🍺😎
+The LLM hub is live. My wife has a chat UI. My AI agents have a single gateway. I can see token spend in Prometheus. And I survived nine bugs to tell the tale 🥦😎
