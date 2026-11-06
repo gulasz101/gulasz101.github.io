@@ -2,7 +2,7 @@
 title: "Everything was blinking and nothing worked, or how I debugged my homelab just to turn it off and on again"
 mermaid: true
 categories: [homelab]
-tags: [homelab, networking, opnsense, pi-hole, k3s, kubernetes, cnpg, paperclip, zigbee, claude-code, incident]
+tags: [homelab, networking, opnsense, pi-hole, k3s, kubernetes, cnpg, paperclip, zigbee, incident]
 ---
 
 ![White shelf in the corner of a room with a small NAS, a black tower and a tiny switch, dozens of green and amber LEDs lit](./../assets/images/2026-11-05/01-header.jpg)
@@ -11,9 +11,7 @@ There is nothing more frustrating than coming back home and figure out entire ne
 
 I am not exaggerating. I walked in, looked at the shelf, and everything was blinking. Switches blinking like hell. Router alive. Server alive. Every LED in the flat telling me "all good boss". And no internet.
 
-So I did what every respectable team lead does in 2026. I opened laptop, connected it to OPNsense with ethernet cable and asked Claude Code:
-
-> are you able to login over ssh to opnsense and tell me why there is no internet coming from opnsense?
+So I did what every respectable team lead does. I opened laptop, connected it to OPNsense with ethernet cable and started to poke around.
 
 What followed took 5 cable moves, one USB-C dongle getting accused of crimes, and at the end the most embarrassing fix in entire IT history. But let's go in order 😅
 
@@ -21,7 +19,7 @@ What followed took 5 cable moves, one USB-C dongle getting accused of crimes, an
 
 So my router is OPNsense running on old Samsung laptop. Yes, really. Password for it sits encrypted with sops in my homelab repo, because I am very professional person.
 
-Claude Code decrypted it without showing it to anybody, tried to login and got this:
+So I decrypted it, tried to login and got this:
 
 ```
 root@10.0.0.1: Permission denied (publickey).
@@ -52,19 +50,19 @@ Next finding was this one. DHCP on my network hands out exactly one DNS server, 
 10.0.0.179 dev enp0s13f0u1c2 INCOMPLETE
 ```
 
-I wrote down this risk in my own ADR some months ago, word by word: "Pi-hole down = home offline". Very smart. Could have been also a post-it on my forehead.
+I wrote down this risk in my own [ADR](https://github.com/gulasz101/homelab-2nd/blob/main/docs/adr/adr-021-pihole-dns-shield-on-k3s.md) some months ago, word by word: "Pi-hole down = home offline". Very smart. Could have been also a post-it on my forehead.
 
 Road to internet wide open. Only guy who knows the addresses did not come to work.
 
-So Claude Code came with the theory: rack is off, or something is not plugged in. Reasonable. Also wrong. Because homelab-2nd is all the time up and running, and I was looking at it.
+So my first theory was: something is not plugged in. Reasonable, and wrong, as homelab-2nd is all the time up and running, and I was looking at it.
 
 ![Blue ethernet cable lying on the floor under a shelf with a dust bunny on its plug, next to two loose screws](./../assets/images/2026-11-05/03-loose-cable.jpg)
 
-*The "something is not plugged in" theory, as Claude Code imagined it.*
+*The "something is not plugged in" theory. Everything was plugged in.*
 
 ## The cable tour begins
 
-Now starts the part where I am useful, as I am only component of this system with legs.
+Now starts physical part. No automation, no GitOps, only me and cables.
 
 Small context about my network: this is not some rack with managed switches. There are two small 8 port switches, tplink or dlink, I don't even remember which, sitting there for years. My laptop has no ethernet port, so everything goes through USB-C dongle. And I started to plug this dongle everywhere.
 
@@ -83,7 +81,7 @@ Request who-has 10.0.0.179 tell 10.0.0.120
 
 Every second. Forever. Unknown device, not in my repo, shouting for three of my machines into empty room. For a moment it was quite a creepy feeling.
 
-We found out later this was zigbee-node, my small Orange Pi with Zigbee dongle. It was looking for k3s control plane, for NAS and for other worker. Nobody picked up.
+I found out later this was zigbee-node, my small Orange Pi with Zigbee dongle. It was looking for k3s control plane, for NAS and for other worker. Nobody picked up.
 
 ![Tiny bare single board computer on a white shelf with one red LED lit, next to a white Zigbee dongle with a short antenna](./../assets/images/2026-11-05/06-orange-pi.jpg)
 
@@ -91,7 +89,7 @@ We found out later this was zigbee-node, my small Orange Pi with Zigbee dongle. 
 
 ## Direct cable: the patient is alive
 
-**Cable move 2:** Claude Code asks if homelab-2nd is powered on. I am slightly offended on behalf of homelab-2nd and I plug laptop directly to it. No switch, nothing, one cable, two devices.
+**Cable move 2:** Enough guessing. I plugged laptop directly to homelab-2nd. No switch, nothing, one cable, two devices.
 
 And suddenly:
 
@@ -103,12 +101,14 @@ Request who-has 198.41.200.13 tell 169.254.202.153
 
 `169.254.x.x`. So homelab-2nd was alive and it forgot who it is. No DHCP, so it gave itself emergency address and started asking on the wire for entire internet, including its own old address. Cloudflare tunnels were still trying to dial out from inside. I found this one a bit touching.
 
-To talk to it we needed address from same range, and here we lost some time, because NetworkManager kept retrying DHCP and silently removing every address Claude Code added by hand. Solution is to tell it to go away for a moment:
+To talk to it I needed address from same range, and here I lost some time, because NetworkManager kept retrying DHCP and silently removing every address I added by hand. Solution is to tell it to go away for a moment:
 
 ```sh
 sudo nmcli device set enp0s13f0u1c2 managed no
 sudo ip addr add 169.254.10.10/16 dev enp0s13f0u1c2
 ```
+
+What happens above? NetworkManager stops touching this interface, so it does not wipe my address anymore, and I am adding address from the same link-local range by hand.
 
 After that ping worked, and my kubeconfig also worked, with one small trick, as certificate does not know about this emergency address:
 
@@ -137,9 +137,9 @@ So control plane healthy, Pi-hole pod `2/2 Running`, all three workers lost with
 
 **Cable move 3:** I recabled everything back. Laptop on the switch. Still no lease. Still only zigbee-node shouting.
 
-**Cable move 4:** laptop to the other switch, the one with OPNsense and homelab-2nd. Now tcpdump was finally full of life: Espressif things, Xiaomi, Huawei, even zigbee-node, which by the way proves switches are connected to each other. So Claude Code's "link between the switches is dead" theory also died.
+**Cable move 4:** laptop to the other switch, the one with OPNsense and homelab-2nd. Now tcpdump was finally full of life: Espressif things, Xiaomi, Huawei, even zigbee-node, which by the way proves switches are connected to each other. So my "link between the switches is dead" theory also died.
 
-But OPNsense? Nothing. homelab-2nd? Nothing. And when Claude Code tried to talk to five devices which were clearly alive and transmitting in the same moment:
+But OPNsense? Nothing. homelab-2nd? Nothing. And when I tried to talk to five devices which were clearly alive and transmitting in the same moment:
 
 ```
 10.0.0.109: Received 0 response(s)
@@ -172,7 +172,7 @@ Direct cable to anything worked. Same dongle, sometimes same machines. Through t
 
 ## Have you tried turning it off and on again?
 
-Claude Code wrote me list of 5 things to try. Number 1, because it was the cheapest: pull power from both switches, wait 30 seconds, plug back.
+So I wrote down list of 5 things to try. Number 1, because it was the cheapest: pull power from both switches, wait 30 seconds, plug back.
 
 ![Floor level view of a white power strip with a small orange light and a black power adapter pulled out, a small black box behind them](./../assets/images/2026-11-05/08-the-plugs.jpg)
 
@@ -197,9 +197,15 @@ Lease on laptop. Pi-hole answering. MinIO healthy. No config changed. Not one li
 
 ## It was not over
 
-Right after network came back cluster looked horrible: 17 pods in `CrashLoopBackOff`, half of CNPG databases `Waiting`. I wanted to panic. Claude Code said let's wait 4 minutes. And yes, after 4 minutes all 12 databases were healthy and crash loops were gone. They just needed their friends back. Trust me, don't touch anything for first 5 minutes.
+Right after network came back cluster looked horrible: 17 pods in `CrashLoopBackOff`, half of CNPG databases `Waiting`. When I saw all those crashes I wanted to cry, as it looked like long night ahead if I want to have anything running before morning.
 
-Then I asked to check Paperclip, this is where my AI agents company lives, on separate MacBook Air outside of the cluster. And public URL gave 200, so all good, right?
+But I gave myself the privilege of waiting 5 minutes, to see how powerful kubernetes can be in action and if my setup can self heal.
+
+And I was right! All 12 databases healthy, crash loops gone, and I did not touch a thing. It was worth hardening this setup for last 4 months! (almost) everything back and kicking :D
+
+Trust me, don't touch anything for first 5 minutes.
+
+Why almost? Paperclip, this is where my AI agents company lives, on separate MacBook Air outside of the cluster. Public URL gave 200, so all good, right?
 
 Nope. 200 was only front page. Real API:
 
@@ -219,7 +225,7 @@ active              | Lock:tuple           | blocked
 ... (8 of those)
 ```
 
-All 10 connections from the pool used. 2 sitting in transaction, waiting for application. 8 waiting for lock held by those 2. And application, as far as we can tell from database side, could not finish as it had no free connection left.
+All 10 connections from the pool used. 2 sitting in transaction, waiting for application. 8 waiting for lock held by those 2. And application, as far as I can tell from database side, could not finish as it had no free connection left.
 
 ![Paper clips hooked together in a line on a dark desk, tangled into a knot in the middle](./../assets/images/2026-11-05/10-paperclips.jpg)
 
@@ -257,3 +263,9 @@ Now oatmeal is baking for tomorrow's breakfast and I am going to Packstation to 
 ![Row of yellow parcel lockers on a wet street at night under a street lamp](./../assets/images/2026-11-05/11-packstation.jpg)
 
 Fingers crossed for DHL 🤞
+
+>Material for this post, and some parts of the post are AI assisted.
+Models used while working on outage and post itself:
+- claude-opus-5-5
+- flux2-klein (self hosted), all pictures in this post
+
