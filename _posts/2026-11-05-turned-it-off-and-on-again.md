@@ -5,7 +5,7 @@ categories: [homelab]
 tags: [homelab, networking, opnsense, pi-hole, k3s, kubernetes, cnpg, paperclip, zigbee, claude-code, incident]
 ---
 
-![Man in doorway looking at shelf full of lit up machines](./../assets/images/2026-11-05/01-header.jpg)
+![White shelf in the corner of a room with a small NAS, a black tower and a tiny switch, dozens of green and amber LEDs lit](./../assets/images/2026-11-05/01-header.jpg)
 
 There is nothing more frustrating than coming back home and figure out entire network is flat, even if all devices are healthy.
 
@@ -39,7 +39,7 @@ rtt min/avg/max/mdev = 16.138/16.843/17.308/0.507 ms
 
 0% packet loss, 17 ms. So internet was there. Whole time. It was me who was not able to use it.
 
-![Slim laptop connected to old router laptop with a white dongle, android inspecting the cable](./../assets/images/2026-11-05/02-router-laptop.jpg)
+![Old black laptop on a wooden desk with a blue ethernet cable, a white dongle in the silver laptop next to it, and cups of tea](./../assets/images/2026-11-05/02-router-laptop.jpg)
 
 *Router, found innocent. Interrogated with one blue cable and one white dongle.*
 
@@ -54,11 +54,13 @@ Next finding was this one. DHCP on my network hands out exactly one DNS server, 
 
 I wrote down this risk in my own ADR some months ago, word by word: "Pi-hole down = home offline". Very smart. Could have been also a post-it on my forehead.
 
-![Android waiting at an empty telephone switchboard, an open road visible through the window](./../assets/images/2026-11-05/03-empty-switchboard.jpg)
-
-*Road to internet wide open. Only guy who knows the addresses did not come to work.*
+Road to internet wide open. Only guy who knows the addresses did not come to work.
 
 So Claude Code came with the theory: rack is off, or something is not plugged in. Reasonable. Also wrong. Because homelab-2nd is all the time up and running, and I was looking at it.
+
+![Blue ethernet cable lying on the floor under a shelf with a dust bunny on its plug, next to two loose screws](./../assets/images/2026-11-05/03-loose-cable.jpg)
+
+*The "something is not plugged in" theory, as Claude Code imagined it.*
 
 ## The cable tour begins
 
@@ -66,7 +68,7 @@ Now starts the part where I am useful, as I am only component of this system wit
 
 Small context about my network: this is not some rack with managed switches. There are two small 8 port switches, tplink or dlink, I don't even remember which, sitting there for years. My laptop has no ethernet port, so everything goes through USB-C dongle. And I started to plug this dongle everywhere.
 
-![Workbench full of USB-C dongles and cables, man inspecting one against the lamp](./../assets/images/2026-11-05/04-dongle-pile.jpg)
+![Scratched wooden table with a tangled heap of small adapters and cables, next to a cardboard box of old chargers](./../assets/images/2026-11-05/04-dongle-pile.jpg)
 
 *Inventory of my network strategy.*
 
@@ -83,7 +85,7 @@ Every second. Forever. Unknown device, not in my repo, shouting for three of my 
 
 We found out later this was zigbee-node, my small Orange Pi with Zigbee dongle. It was looking for k3s control plane, for NAS and for other worker. Nobody picked up.
 
-![Android speaking into a tin can with strings leading to three cans lying untouched on the floor](./../assets/images/2026-11-05/06-tin-can-shouting.jpg)
+![Tiny bare single board computer on a white shelf with one red LED lit, next to a white Zigbee dongle with a short antenna](./../assets/images/2026-11-05/06-orange-pi.jpg)
 
 *zigbee-node, around 19:30. Very loyal little board.*
 
@@ -125,7 +127,7 @@ t460          NotReady   worker
 zigbee-node   NotReady   worker
 ```
 
-![Android with a stethoscope on the server, wall plate holder above it empty](./../assets/images/2026-11-05/07-stethoscope.jpg)
+![Compact black mini server with a single yellow ethernet cable going down to a silver laptop on the floor](./../assets/images/2026-11-05/07-direct-cable.jpg)
 
 *Patient has a heartbeat, does not remember own house number.*
 
@@ -149,7 +151,7 @@ But OPNsense? Nothing. homelab-2nd? Nothing. And when Claude Code tried to talk 
 
 Everybody talking, nobody listening. On top of that laptop adapter was showing 116 transmit errors, up from 0. So USB-C dongle went to the suspect list, with cable, port, switch and my life choices.
 
-![Man kneeling behind the shelf in a tangle of cables with a torch on the floor](./../assets/images/2026-11-05/05-behind-the-shelf.jpg)
+![Big knot of blue, yellow and grey cables hanging behind a white shelf, lit from below by a torch lying on the floor](./../assets/images/2026-11-05/05-behind-the-shelf.jpg)
 
 *Technical term for this activity is "layer 1 troubleshooting". I was on my knees for it, which feels correct.*
 
@@ -172,13 +174,13 @@ Direct cable to anything worked. Same dongle, sometimes same machines. Through t
 
 Claude Code wrote me list of 5 things to try. Number 1, because it was the cheapest: pull power from both switches, wait 30 seconds, plug back.
 
-![Man crouching at the power strip holding two power adapters next to dark switches](./../assets/images/2026-11-05/08-the-plugs.jpg)
+![Floor level view of a white power strip with a small orange light and a black power adapter pulled out, a small black box behind them](./../assets/images/2026-11-05/08-the-plugs.jpg)
 
 *30 seconds of silence. Longest of the evening.*
 
 I plugged them in. And from the shelf I heard this:
 
-![Storage tower spinning up with fan blowing, man cheering with arms raised](./../assets/images/2026-11-05/09-omv-wakes.jpg)
+![Open black PC tower with stacked drive bays and a big fan, one blue LED lit](./../assets/images/2026-11-05/09-omv-wakes.jpg)
 
 *OMV realizing it has almost 3 hours of work to catch up with.*
 
@@ -219,9 +221,9 @@ active              | Lock:tuple           | blocked
 
 All 10 connections from the pool used. 2 sitting in transaction, waiting for application. 8 waiting for lock held by those 2. And application, as far as we can tell from database side, could not finish as it had no free connection left.
 
-![Two androids asleep in a doorway with eight androids waiting in line behind them](./../assets/images/2026-11-05/10-queue-at-the-door.jpg)
+![Paper clips hooked together in a line on a dark desk, tangled into a knot in the middle](./../assets/images/2026-11-05/10-paperclips.jpg)
 
-*Polish post office, 1994. Also Paperclip, 20:27.*
+*Paperclip, 20:27. Polish post office, 1994. Same queue.*
 
 Fix for that was exactly the same as for network, only with more syllables:
 
@@ -252,6 +254,6 @@ What I take from it: blinking light means there is electricity, and that's all i
 
 Now oatmeal is baking for tomorrow's breakfast and I am going to Packstation to pickup a parcel. After a day like that I think universe owes me one thing which works at first try.
 
-![Man walking to yellow parcel lockers at night with fingers crossed, android carrying a baking dish](./../assets/images/2026-11-05/11-packstation.jpg)
+![Row of yellow parcel lockers on a wet street at night under a street lamp](./../assets/images/2026-11-05/11-packstation.jpg)
 
 Fingers crossed for DHL 🤞
